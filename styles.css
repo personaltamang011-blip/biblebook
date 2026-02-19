@@ -1,0 +1,60 @@
+:root{
+  --bg:#fcfcfd;
+  --card:#ffffff;
+  --muted:#6b7280;
+  --accent:#0b8457;
+  --shadow: 0 6px 18px rgba(16,24,40,0.06);
+  --radius:14px;
+  --gap:12px;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialiased}
+#app{max-width:780px;margin:0 auto;padding:12px 12px 24px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 4px}
+.topbar h1{font-size:18px;margin:0}
+.icon-btn{background:transparent;border:0;font-size:18px;padding:8px;border-radius:10px;cursor:pointer}
+.icon-btn:active{transform:scale(.98)}
+.hidden{display:none !important}
+
+/* search */
+.search-wrap{padding:8px 0}
+#searchInput{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #eee;outline:none;font-size:15px}
+
+/* books grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:var(--gap);margin-top:8px}
+.book-card{background:var(--card);border-radius:12px;padding:14px;box-shadow:var(--shadow);cursor:pointer;display:flex;flex-direction:column;gap:8px;transition:transform .12s, box-shadow .12s}
+.book-card:active{transform:translateY(2px)}
+.book-title{font-weight:600;font-size:15px}
+.book-sub{font-size:13px;color:var(--muted)}
+
+/* Chapter & Verses page */
+.page.chapters, .page.verses { padding:8px 0; }
+.chapters-list{display:flex;flex-wrap:wrap;gap:10px;padding-top:6px}
+.chapter-btn{min-width:56px;padding:10px 12px;border-radius:10px;border:1px solid #eee;background:#fff;text-align:center;cursor:pointer}
+.chapter-btn:active{transform:translateY(1px)}
+.chapter-btn.active{box-shadow:0 6px 16px rgba(11,132,87,0.12);border-color:var(--accent)}
+
+/* Verses */
+.verses-wrap{margin-top:8px;border-radius:12px;background:var(--card);padding:10px;box-shadow:var(--shadow)}
+.verse{padding:10px;border-bottom:1px solid #f4f4f6;display:flex;gap:8px}
+.verse .num{font-weight:700;color:var(--muted);min-width:28px;text-align:right}
+.verse .text{flex:1}
+
+/* Drawer */
+.drawer{position:fixed;right:0;top:0;height:100%;width:300px;background:#fff;box-shadow:-8px 0 30px rgba(0,0,0,0.08);padding:12px;z-index:40;overflow:auto}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:30}
+
+/* small list */
+.list{display:flex;flex-direction:column;gap:8px}
+.list .item{padding:10px;border-radius:8px;background:#fff;border:1px solid #f2f2f2}
+
+/* footer */
+.footer-note{font-size:12px;color:var(--muted);text-align:center;margin-top:12px}
+
+/* responsive tweaks */
+@media(min-width:900px){
+  #app{padding:20px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+  .drawer{width:360px}
+}

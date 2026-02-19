@@ -1,0 +1,4 @@
+[
+  { "id": 1, "name": "Genesis", "file": "books/genesis.json" },
+  { "id": 2, "name": "Exodus",  "file": "books/exodus.json" }
+]

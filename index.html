@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Book Reader — Mobile UI</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <button id="backBtn" class="icon-btn hidden" aria-label="Back">◀</button>
+      <h1 id="title">SarmiMani book</h1>
+      <button id="menuBtn" class="icon-btn" aria-label="Menu">☰</button>
+    </header>
+
+    <main id="main" class="page books-page">
+      <div class="search-wrap">
+        <input id="searchInput" placeholder="Search books or verses" type="search" />
+      </div>
+
+      <div id="booksGrid" class="grid"></div>
+    </main>
+
+    <aside id="drawer" class="drawer hidden">
+      <h3>Books</h3>
+      <div id="booksListSmall" class="list"></div>
+    </aside>
+
+    <div id="overlay" class="overlay hidden"></div>
+
+    <footer class="footer-note">mani Tap a book to open — tap a chapter to read verses.</footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

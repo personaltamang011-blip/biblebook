@@ -1,0 +1,20 @@
+{
+  "id": 1,
+  "name": "Genesis",
+  "chapters": [
+    {
+      "number": 1,
+      "verses": [
+        "In the beginning God created the heaven and the earth.",
+        "And the earth was without form, and void..."
+      ]
+    },
+    {
+      "number": 2,
+      "verses": [
+        "Thus the heavens and the earth were finished...",
+        "And on the seventh day God ended his manisarmi work..."
+      ]
+    }
+  ]
+}
