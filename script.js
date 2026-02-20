@@ -1,4 +1,4 @@
-// script.js - Mobile-first Book Reader with books-index.json + lazy loading
+// script.js - Mobile-first Book Reader with books-index.json + lazy loading + chapter selection
 const INDEX_FILE = "books-index.json";
 const booksGrid = document.getElementById("booksGrid");
 const booksListSmall = document.getElementById("booksListSmall");
@@ -10,8 +10,8 @@ const overlay = document.getElementById("overlay");
 const searchInput = document.getElementById("searchInput");
 const main = document.getElementById("main");
 
-let booksIndex = [];               // array from books-index.json
-let bookCache = {};                // loaded book data keyed by book.id
+let booksIndex = []; // array from books-index.json
+let bookCache = {};  // loaded book data keyed by book.id
 let currentBookId = null;
 let currentChapter = null;
 
@@ -82,12 +82,10 @@ function renderBooksSmallList(list) {
   });
 }
 
-// --- open a book (single-touch) ---
+// --- open a book ---
 async function openBook(bookId, options = {}) {
   currentBookId = Number(bookId);
   setTitle("Loading...");
-
-  // mark back button visible (we are not on list)
   backBtn.classList.remove("hidden");
 
   try {
@@ -98,23 +96,16 @@ async function openBook(bookId, options = {}) {
       if (!meta) throw new Error("Book meta not found");
       book = await fetchJson(meta.file);
       bookCache[currentBookId] = book;
-      // optionally persist small cache in localStorage:
-      // localStorage.setItem(`book_${book.id}`, JSON.stringify(book));
     }
 
-    // render chapters view (default)
+    // ✅ Always show chapters list when a book is opened
     renderChaptersView(book);
 
-    // if options.showChaptersOnly => just show chapters; else check deep link or open chapter 1 by default?
+    // optional deep link open
     if (options.chapter) {
       openChapter(book.id, Number(options.chapter));
-    } else if (options.showChaptersOnly) {
-      // do nothing
-    } else {
-      // single-touch behavior: open first chapter automatically for faster reading like a bible app
-      // If you prefer to show chapters instead, comment out the next line.
-      openChapter(book.id, book.chapters[0]?.number ?? 1);
     }
+
   } catch (err) {
     setTitle("Books");
     alert("Failed to open book: " + err.message);
@@ -123,23 +114,24 @@ async function openBook(bookId, options = {}) {
 }
 
 function showBooks() {
-  // Reset UI to home
   currentBookId = null;
   currentChapter = null;
   setTitle("Books");
   backBtn.classList.add("hidden");
   main.className = "page books-page";
-  // show grid (already in DOM)
 }
 
 // --- Chapters view rendering ---
 function renderChaptersView(book) {
   main.className = "page chapters-page";
   setTitle(book.name);
-  // create header & chapters container
+
   const container = el("div", "panel");
   const heading = el("div", "", "");
-  heading.innerHTML = `<h2 style="margin:0">${book.name}</h2><div style="color:var(--muted);font-size:13px">${book.chapters.length} chapters</div>`;
+  heading.innerHTML = `<h2 style="margin:0">${book.name}</h2>
+    <div style="color:var(--muted);font-size:13px">
+      ${book.chapters.length} chapters
+    </div>`;
   container.appendChild(heading);
 
   const chaptersWrap = el("div", "chapters-list");
@@ -150,7 +142,6 @@ function renderChaptersView(book) {
     chaptersWrap.appendChild(btn);
   });
 
-  // replace main content
   main.innerHTML = "";
   main.appendChild(container);
   main.appendChild(chaptersWrap);
@@ -170,23 +161,32 @@ function openChapter(bookId, chapterNumber) {
     return;
   }
 
-  // header: back to chapters quick button
+  // ✅ Add Back to Chapters button
+  const backToChapters = el("button", "chapter-btn", "← Back to Chapters");
+  backToChapters.style.margin = "10px 0";
+  backToChapters.addEventListener("click", () => renderChaptersView(book));
+
   const header = el("div", "chap-header");
-  header.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><strong>Chapter ${ch.number}</strong><small style="color:var(--muted)">${ch.verses.length} verses</small></div>`;
+  header.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
+    <strong>Chapter ${ch.number}</strong>
+    <small style="color:var(--muted)">${ch.verses.length} verses</small>
+  </div>`;
 
   // verses container
   const versesWrap = el("div", "verses-wrap");
   ch.verses.forEach((t, idx) => {
     const v = el("div", "verse");
-    v.innerHTML = `<div class="num">${idx+1}</div><div class="text">${escapeHtml(t)}</div>`;
+    v.innerHTML = `<div class="num">${idx + 1}</div>
+                   <div class="text">${escapeHtml(t)}</div>`;
     versesWrap.appendChild(v);
   });
 
   main.innerHTML = "";
+  main.appendChild(backToChapters);
   main.appendChild(header);
   main.appendChild(versesWrap);
 
-  // update URL hash for deep linking
+  // update URL hash
   updateHash({ book: bookId, chapter: chapterNumber });
 }
 
@@ -197,7 +197,6 @@ searchInput.addEventListener("input", (e) => {
     renderBooksGrid(booksIndex);
     return;
   }
-  // simple search: match name or verses (if loaded)
   const filtered = booksIndex.filter(b => {
     if (b.name.toLowerCase().includes(q)) return true;
     const cached = bookCache[b.id];
@@ -207,13 +206,13 @@ searchInput.addEventListener("input", (e) => {
   renderBooksGrid(filtered);
 });
 
-// --- deep link logic: parse and update hash ---
+// --- deep link logic ---
 function parseHash() {
   const hash = location.hash.replace(/^#/, "");
   if (!hash) return {};
   const pairs = hash.split("&").map(p => p.split("="));
   const result = {};
-  pairs.forEach(([k,v]) => { if (k) result[k] = decodeURIComponent(v); });
+  pairs.forEach(([k, v]) => { if (k) result[k] = decodeURIComponent(v); });
   return result;
 }
 function updateHash(params) {
@@ -230,8 +229,16 @@ async function handleDeepLink() {
   }
 }
 
-// small escape for verse text
-function escapeHtml(s){ return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\'':'&#39;','"':'&quot;'}[c])); }
+// --- small escape for verse text ---
+function escapeHtml(s) {
+  return String(s).replace(/[&<>'"]/g, c => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '\'': '&#39;',
+    '"': '&quot;'
+  }[c]));
+}
 
 // --- init ---
 loadInitial();
