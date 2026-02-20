@@ -1,4 +1,5 @@
 [
-  { "id": 1, "name": "Genesis", "file": "books/genesis.json" },
-  { "id": 2, "name": "Exodus",  "file": "books/exodus.json" }
+  { "id": 1, "name": "Genesis",  "file": "books/genesis.json" },
+  { "id": 2, "name": "Exodus",   "file": "books/exodus.json" },
+  { "id": 3, "name": "leviticus.json", "file": "books/lleviticus.json" }
 ]
